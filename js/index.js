@@ -8,10 +8,10 @@ fetch (`https://api.github.com/users/${userName}/repos`)
     }
     })
     .then(data => {
-        console.log(data); // Log the response data to the console
-        document.getElementById('api-data').textContent = 'Data fetched successfully! Check the console.';
+        console.log(data); // Log the response data to the console   
     })
     .catch(error => {
-        console.error('Error:', error);
-        document.getElementById('api-data').textContent = 'Error fetching data.';
+        console.error('Error:', error);   
     });
+
+    
