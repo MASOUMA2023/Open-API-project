@@ -3,3 +3,7 @@ h1 {
     font-size: 2em;
     color: rgb(56, 188, 225);
 }
+.people-container {
+    display: flex;
+    width:10%;
+}
