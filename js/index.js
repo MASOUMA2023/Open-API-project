@@ -1,7 +1,7 @@
 
 const peopleContainer = document.getElementById('people-container');
 const personContainer = document.getElementById('person-container');
-const personHeader = document.getElementById('person-header');
+/*const personHeader = document.getElementById('person-header');*/
 const personDetails = document.getElementById('person-details');
 const doneButton = document.getElementById('done');
 
@@ -17,10 +17,11 @@ let data = await response.json();
 console.log(data);
 const dataLength = data.total_pages;
 console.log('fetch successfull:', dataLength);
+
 const baseUrl = "https://www.swapi.tech/api/people?page=";
 const urls = [];
 for ( let i = 1; i<= dataLength; i++){
-    urls.push(`${baseUrl}${i}&limit=10`);
+    urls.push(`${baseUrl}${i}&limit=11`);
 }
 
  await getAllPages(urls);
@@ -28,23 +29,27 @@ for ( let i = 1; i<= dataLength; i++){
         console.error(err);
     }
 }
-fetchPeople();
 
 async function getAllPages(urls){
-    try {
+    try{
         const promiseList = urls.map(url =>
             fetch(url)
                 .then(response => response.json())
-                .catch(err => console.error('Failed to fetch:',url, err))
-        );
-    const results = await Promise.all(promiseList);
+                .catch(err => console.log('Failed to fetch:', err)));
+    const finalResults = await Promise.all(promiseList);
+   
         let finalList=[];
-        results.forEach(res => {
+       finalResults.forEach(res => {
             finalList = finalList.concat(res.results);
         });
         console.log(finalList);
-
-        finalList.forEach(person => {
+        displayPeople(finalList);
+    } catch(err){
+        console.erroe(err);
+    }
+}
+  function displayPeople(people){
+people.forEach(person => {
             const personElt = document.createElement('div');
             personElt.className ='person';
 
@@ -52,34 +57,41 @@ async function getAllPages(urls){
             personHeader.innerHTML = person.name;
             personElt.appendChild(personHeader);
             peopleContainer.appendChild(personElt);
-            personElt.addEventListener('click', async() =>{
-                while (personDetails.firstChild){
-                    personDetails.removeChild(personDetails.firstChild);
-                }
 
-                try {
-                    const personResponse = await fetch(person.url);
-                    const personData = await personResponse.json();
+            personElt.addEventListener('click', () =>{
+              displayPersonDetails(person.url);
+            });
+        });
+    }
+async function displayPersonDetails(personURL){
+while (personDetails.firstChild){
+    personDetails.removeChild(personDetails.firstChild);
+}
+    try {
 
-                
-                for (const propKey in personData.result.properties){
-                if ( propKey === 'name')  {
-                    personHeader.innerText = personData.result.properties[propKey];
-                } else{ 
+const response = await fetch(personURL);
+                if (!response.ok){
+                    throw new Error('error fetching person details!');
+                } 
+               const personData = await response.json();
+                for (let propKey in personData.result.properties){
+                if ( propKey === 'homeworld' || propKey === 'url')  {
+                    continue;}
                     const propItem= document.createElement('li');
-                    propItem.innerText = '${propKey}: ${personData.result.properties[propKey]}';
+                    propItem.innerText = `${propKey}: ${personData.result.properties[propKey]}`;
                     personDetails.appendChild(propItem);
                 }
-                }          
+                  
         personContainer.hidden= false;
         window.scrollTo(0,0);
 } catch (err) {
-    console.error('Failed to fetch person details',err);
-}
-            });
-        })
-    } catch(err){
-        console.error("failed tofetch all pages", err);
+    console.log('Failed to fetch person details',err);
+
+    }
     } 
+doneButton.addEventListener('click', () =>{
+    personContainer.hidden =true;
+});
+fetchPeople();
     
-}
+
