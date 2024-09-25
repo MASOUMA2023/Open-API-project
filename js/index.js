@@ -21,7 +21,7 @@ console.log('fetch successfull:', dataLength);
 const baseUrl = "https://www.swapi.tech/api/people?page=";
 const urls = [];
 for ( let i = 1; i<= dataLength; i++){
-    urls.push(`${baseUrl}${i}&limit=10`);
+    urls.push(`${baseUrl}${i}&limit=11`);
 }
 
  await getAllPages(urls);
@@ -78,7 +78,7 @@ const response = await fetch(personURL);
                 if ( propKey === 'homeworld' || propKey === 'url')  {
                     continue;}
                     const propItem= document.createElement('li');
-                    propItem.innerText = '${propKey}: ${personData.result.properties[propKey]}';
+                    propItem.innerText = `${propKey}: ${personData.result.properties[propKey]}`;
                     personDetails.appendChild(propItem);
                 }
                   
